@@ -24,6 +24,20 @@ find_package( Boost COMPONENTS date_time REQUIRED )
 #include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
 #link_directories( ${Boost_LIBRARY_DIRS} )
 
+add_subdirectory( "${CMAKE_CURRENT_SOURCE_DIR}/sqlite-amalgamation" )
+
+#list( APPEND CMAKE_PREFIX_PATH "$ENV{SQLITE_ROOT}" )
+list( APPEND CMAKE_PREFIX_PATH "${SQLITE_ROOT}" )
+
+# Get the include directories for the target.
+get_target_property(SQLITE3_INCLUDES SQLite3 INCLUDE_DIRECTORIES)
+
+include_directories( "${CMAKE_CURRENT_SOURCE_DIR}/sqlite-amalgamation" )
+
+# Construct the compiler string for the include directories.
+foreach(dir ${SQLITE3_INCLUDES})
+    string(APPEND INCLUDE_COMPILER_STRING "/I${dir} ")
+endforeach()
 
 ### get soci ###
 include(FetchContent)
@@ -63,6 +77,7 @@ if(NOT TARGET soci_sqlite3_static)
 endif()
 
 target_link_libraries(socidl PRIVATE
+        SQLite::SQLite3
     soci_sqlite3_static #<<- this needs symbols from core, therefor you need to put it first (try to toggle! and see what happens)
     soci_core_static
 )
