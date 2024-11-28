@@ -1,0 +1,25 @@
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+	"name": "soci-download",
+	"version-string": "0-dev",
+	"dependencies": [
+		{
+			"name": "soci",
+			"features": [ "boost", "sqlite3" ]
+		},
+		"boost-date-time",
+		"sqlite3"
+	],
+	"builtin-baseline": "37c3e63a1306562f7f59c4c3c8892ddd50fdf992",
+	"overrides": [
+		{
+			"name": "openssl",
+			"version-string": "1.1.1n"
+		}
+	],
+	"vcpkg-configuration": {
+		"overlay-ports": [
+			"./ports"
+		]
+	}
+}
