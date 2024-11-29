@@ -8,21 +8,21 @@ include(GNUInstallDirs)
 
 #------------------------------------------------------------------------------
 # build options and optional modules:
-option(SQLITE_ENABLE_COLUMN_METADATA "enables column metadata"                         OFF)
-option(SQLITE_ENABLE_DBSTAT_VTAB     "enables dbstat virtual table"                    OFF)
-option(SQLITE_ENABLE_FTS3            "enables full text searches version 3"            OFF)
-option(SQLITE_ENABLE_FTS4            "enables full text searches version 3 & 4"        ON)
-option(SQLITE_ENABLE_FTS5            "enables full text searches version 5"            ON)
-option(SQLITE_ENABLE_GEOPOLY         "enables Geopoly extention"                       OFF)
-option(SQLITE_ENABLE_ICU             "enables international components for unicode"    OFF)
-option(SQLITE_ENABLE_MATH_FUNCTIONS  "enables the built-in SQL math functions"         ON)
-option(SQLITE_ENABLE_RBU             "enables resumable bulk update extension"         OFF)
-option(SQLITE_ENABLE_RTREE           "enables R*TRee index extension"                  OFF)
-option(SQLITE_ENABLE_STAT4           "enhances query planner under certain situations" OFF)
-option(SQLITE_OMIT_DECLTYPE          "omit declared type of columns"                   ON)
-option(SQLITE_OMIT_JSON              "disables JSON SQL functions"                     OFF)
-option(SQLITE_RECOMMENDED_OPTIONS    "compile by SQLite3 recommended options"          ON)
-option(SQLITE_USE_URI                "enables the default URI filename processing"     OFF)
+option( SQLITE_ENABLE_COLUMN_METADATA "enables column metadata"                         OFF )
+option( SQLITE_ENABLE_DBSTAT_VTAB     "enables dbstat virtual table"                    OFF )
+option( SQLITE_ENABLE_FTS3            "enables full text searches version 3"            OFF )
+option( SQLITE_ENABLE_FTS4            "enables full text searches version 3 & 4"        ON  )
+option( SQLITE_ENABLE_FTS5            "enables full text searches version 5"            ON  )
+option( SQLITE_ENABLE_GEOPOLY         "enables Geopoly extention"                       OFF )
+option( SQLITE_ENABLE_ICU             "enables international components for unicode"    OFF )
+option( SQLITE_ENABLE_MATH_FUNCTIONS  "enables the built-in SQL math functions"         ON  )
+option( SQLITE_ENABLE_RBU             "enables resumable bulk update extension"         OFF )
+option( SQLITE_ENABLE_RTREE           "enables R*TRee index extension"                  OFF )
+option( SQLITE_ENABLE_STAT4           "enhances query planner under certain situations" OFF )
+option( SQLITE_OMIT_DECLTYPE          "omit declared type of columns"                   ON  )
+option( SQLITE_OMIT_JSON              "disables JSON SQL functions"                     OFF )
+option( SQLITE_RECOMMENDED_OPTIONS    "compile by SQLite3 recommended options"          ON  )
+option( SQLITE_USE_URI                "enables the default URI filename processing"     OFF )
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Release or Debug?" FORCE)
@@ -54,6 +54,13 @@ add_custom_command( TARGET ${PROJECT_NAME}
 #set( ENV{SQLITE_ROOT} ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "C/C++ SQLite3 root Dir")
 set( SQLITE_ROOT ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "C/C++ SQLite3 root Dir")
 set_property( CACHE SQLITE_ROOT PROPERTY STRINGS ${CMAKE_CURRENT_BINARY_DIR} )
+
+set( SQLITE3_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/include" CACHE STRING "C/C++ SQLite3 include Dir")
+set_property( CACHE SQLITE3_INCLUDE_DIRS PROPERTY STRINGS "${CMAKE_CURRENT_BINARY_DIR}/include" )
+
+set( SQLITE3_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}/lib" CACHE STRING "C/C++ SQLite3 librarie to link against")
+set_property( CACHE SQLITE3_LIBRARIES PROPERTY STRINGS "${CMAKE_CURRENT_BINARY_DIR}/lib" )
+
 
 target_include_directories(${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
 target_compile_definitions(${PROJECT_NAME} PUBLIC # inject user's options
