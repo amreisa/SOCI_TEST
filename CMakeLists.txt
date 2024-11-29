@@ -54,6 +54,17 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable( SQLite3 )
 
+find_package(SQLite3 REQUIRED)
+
+message("SQLite3_INCLUDE_DIRS : ${SQLite3_INCLUDE_DIRS}")
+message("SQLite3_LIBRARIES : ${SQLite3_LIBRARIES}")
+
+if (SQLITE3_FOUND)
+    set( DATABASE_LINK_LIBRARIES SQLite::SQLite3 )
+else()
+    message( FATAL_ERROR "sqlite3 is not available" )
+endif( SQLITE3_FOUND )
+
 ### get soci ###
 FetchContent_Declare(
     soci-git
