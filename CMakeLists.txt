@@ -47,13 +47,13 @@ include(FetchContent)
 FetchContent_Declare(
     SQLite3
     SOURCE_DIR  ${PROJECT_SOURCE_DIR}/sqlite-amalgamation
-    # GIT_TAG        master
-    # FIND_PACKAGE_ARGS NAMES SQLite3 SQLite sqlite3 sqlite
-    # OVERRIDE_FIND_PACKAGE NAMES SQLite3 SQLite sqlite3 sqlite
-    OVERRIDE_FIND_PACKAGE
+    BUILD_ALWAYS ON
 )
 
 FetchContent_MakeAvailable( SQLite3 )
+
+set(SQLITE3_INCLUDE_DIR "${SQLite3_INCLUDE_DIRS}" CACHE PATH "SQLite3 Include Directory")
+set(SQLITE3_LIBRARY SQLite::SQLite3 CACHE STRING "SQLite3 Library Target")
 
 find_package(SQLite3 REQUIRED)
 
