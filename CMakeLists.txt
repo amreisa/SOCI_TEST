@@ -60,11 +60,11 @@ find_package(SQLite3 REQUIRED)
 message("SQLite3_INCLUDE_DIRS : ${SQLite3_INCLUDE_DIRS}")
 message("SQLite3_LIBRARIES : ${SQLite3_LIBRARIES}")
 
-if (SQLITE3_FOUND)
+if (SQLite3_FOUND)
     set( DATABASE_LINK_LIBRARIES SQLite::SQLite3 )
 else()
     message( FATAL_ERROR "sqlite3 is not available" )
-endif( SQLITE3_FOUND )
+endif( SQLite3_FOUND )
 
 ### get soci ###
 FetchContent_Declare(
@@ -111,3 +111,6 @@ target_link_libraries(socidl PRIVATE
 #if the cmmake was done correctly in soci this would not be needed:
 #set(CMAKE_INCLUDE_CURRENT_DIR ON) <<- they should add this in their code
 target_include_directories( socidl PRIVATE ${soci-git_BINARY_DIR}/include )
+# target_include_directories(socidl INTERFACE $<BUILD_INTERFACE:${SQLite3_INCLUDE_DIRS}>)
+# target_include_directories(socidl INTERFACE $<BUILD_INTERFACE:${soci_SOURCE_DIR}/include>)
+
