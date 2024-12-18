@@ -9,7 +9,7 @@ include(CMakePackageConfigHelpers)
 
 #------------------------------------------------------------------------------
 # build options and optional modules:
-option( SQLITE_ENABLE_COLUMN_METADATA "enables column metadata"                         OFF )
+option( SQLITE_ENABLE_COLUMN_METADATA "enables column metadata"                         ON )
 option( SQLITE_ENABLE_DBSTAT_VTAB     "enables dbstat virtual table"                    OFF )
 option( SQLITE_ENABLE_FTS3            "enables full text searches version 3"            OFF )
 option( SQLITE_ENABLE_FTS4            "enables full text searches version 3 & 4"        ON  )
@@ -20,7 +20,7 @@ option( SQLITE_ENABLE_MATH_FUNCTIONS  "enables the built-in SQL math functions" 
 option( SQLITE_ENABLE_RBU             "enables resumable bulk update extension"         OFF )
 option( SQLITE_ENABLE_RTREE           "enables R*TRee index extension"                  OFF )
 option( SQLITE_ENABLE_STAT4           "enhances query planner under certain situations" OFF )
-option( SQLITE_OMIT_DECLTYPE          "omit declared type of columns"                   ON  )
+option( SQLITE_OMIT_DECLTYPE          "omit declared type of columns"                   OFF  )
 option( SQLITE_OMIT_JSON              "disables JSON SQL functions"                     OFF )
 option( SQLITE_RECOMMENDED_OPTIONS    "compile by SQLite3 recommended options"          ON  )
 option( SQLITE_USE_URI                "enables the default URI filename processing"     OFF )
@@ -46,11 +46,11 @@ set(SQLite3_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
 
 # Export SQLite3 variables for SOCI
-set(SQLite3_FOUND TRUE CACHE BOOL "SQLite3 Found" FORCE)
-set(SQLite3_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/include" CACHE PATH "SQLite3 Include Directory" FORCE)
-set(SQLite3_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/include" CACHE PATH "SQLite3 Include Directory" FORCE)
-set(SQLite3_LIBRARIES SQLite::SQLite3 CACHE STRING "SQLite3 Library" FORCE)
-set(SQLite3_VERSION "${PROJECT_VERSION}" CACHE STRING "SQLite3 Version" FORCE)
+set(SQLITE3_FOUND TRUE CACHE BOOL "SQLite3 Found" FORCE)
+set(SQLITE3_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/include" CACHE PATH "SQLite3 Include Directory" FORCE)
+set(SQLITE3_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/include" CACHE PATH "SQLite3 Include Directory" FORCE)
+set(SQLITE3_LIBRARIES SQLite::SQLite3 CACHE STRING "SQLite3 Library" FORCE)
+set(SQLITE3_VERSION "${PROJECT_VERSION}" CACHE STRING "SQLite3 Version" FORCE)
 
 # SQLite3 as static library:
 add_library(${PROJECT_NAME} STATIC sqlite3.c)
@@ -91,8 +91,7 @@ set_property( CACHE SQLite3_INCLUDE_DIRS PROPERTY STRINGS "${CMAKE_CURRENT_BINAR
 set( SQLite3_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}/lib" CACHE STRING "C/C++ SQLite3 librarie to link against")
 set_property( CACHE SQLite3_LIBRARIES PROPERTY STRINGS "${CMAKE_CURRENT_BINARY_DIR}/lib" )
 
-
-target_include_directories(${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
+target_include_directories(${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:include> $<BUILD_INTERFACE:${SQLite3_INCLUDE_DIRS}>)
 target_compile_definitions(${PROJECT_NAME} PUBLIC # inject user's options
     $<BUILD_INTERFACE:
         $<$<BOOL:${SQLITE_ENABLE_COLUMN_METADATA}>:SQLITE_ENABLE_COLUMN_METADATA>
