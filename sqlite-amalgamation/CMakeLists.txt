@@ -5,6 +5,7 @@ project(SQLite3
     )
 
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 #------------------------------------------------------------------------------
 # build options and optional modules:
@@ -35,31 +36,59 @@ if(SQLITE_ENABLE_COLUMN_METADATA AND SQLITE_OMIT_DECLTYPE)
 endif()
 
 #------------------------------------------------------------------------------
+# Set version variables
+set(SQLite3_VERSION ${PROJECT_VERSION})
+set(SQLite3_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(SQLite3_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(SQLite3_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+
+# Create include directory at configure time
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include")
+
+# Export SQLite3 variables for SOCI
+set(SQLite3_FOUND TRUE CACHE BOOL "SQLite3 Found" FORCE)
+set(SQLite3_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/include" CACHE PATH "SQLite3 Include Directory" FORCE)
+set(SQLite3_LIBRARIES SQLite::SQLite3 CACHE STRING "SQLite3 Library" FORCE)
+set(SQLite3_VERSION "${PROJECT_VERSION}" CACHE STRING "SQLite3 Version" FORCE)
 
 # SQLite3 as static library:
 add_library(${PROJECT_NAME} STATIC sqlite3.c)
-set_target_properties( ${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib/" )
-set_target_properties( ${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib/" )
-set_target_properties( ${PROJECT_NAME} PROPERTIES
-    OUTPUT_NAME   sqlite3
-    PUBLIC_HEADER sqlite3.h
-#    DEBUG_POSTFIX d
-    )
+add_library(SQLite::SQLite3 ALIAS ${PROJECT_NAME})
 
-add_custom_command( TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/sqlite3.h" "${CMAKE_CURRENT_BINARY_DIR}/include/sqlite3.h"
+# Copy header file immediately after configuration
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/sqlite3.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/include/sqlite3.h"
+    COPYONLY
 )
 
-#set( ENV{SQLITE_ROOT} ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "C/C++ SQLite3 root Dir")
+# add_custom_command( TARGET ${PROJECT_NAME}
+#     POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/sqlite3.h" "${CMAKE_CURRENT_BINARY_DIR}/include/sqlite3.h"
+# )
+
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    BUILD_INTERFACE_POSITION ON
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib/"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib/"
+    OUTPUT_NAME   sqlite3
+    PUBLIC_HEADER sqlite3.h
+    # INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/include"
+    #    DEBUG_POSTFIX d
+)
+# Make SQLite3 a required dependency
+set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_LINK_LIBRARIES_DIRECT_ONLY ON)
+
+set( ENV{SQLITE_ROOT} ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "C/C++ SQLite3 root Dir")
 set( SQLITE_ROOT ${CMAKE_CURRENT_BINARY_DIR} CACHE STRING "C/C++ SQLite3 root Dir")
 set_property( CACHE SQLITE_ROOT PROPERTY STRINGS ${CMAKE_CURRENT_BINARY_DIR} )
 
-set( SQLITE3_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/include" CACHE STRING "C/C++ SQLite3 include Dir")
-set_property( CACHE SQLITE3_INCLUDE_DIRS PROPERTY STRINGS "${CMAKE_CURRENT_BINARY_DIR}/include" )
+set( SQLite3_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/include" CACHE STRING "C/C++ SQLite3 include Dir")
+set_property( CACHE SQLite3_INCLUDE_DIRS PROPERTY STRINGS "${CMAKE_CURRENT_BINARY_DIR}/include" )
 
-set( SQLITE3_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}/lib" CACHE STRING "C/C++ SQLite3 librarie to link against")
-set_property( CACHE SQLITE3_LIBRARIES PROPERTY STRINGS "${CMAKE_CURRENT_BINARY_DIR}/lib" )
+set( SQLite3_LIBRARIES "${CMAKE_CURRENT_BINARY_DIR}/lib" CACHE STRING "C/C++ SQLite3 librarie to link against")
+set_property( CACHE SQLite3_LIBRARIES PROPERTY STRINGS "${CMAKE_CURRENT_BINARY_DIR}/lib" )
 
 
 target_include_directories(${PROJECT_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
@@ -111,6 +140,7 @@ endif()
 #------------------------------------------------------------------------------
 configure_file(sqlite3_config.h.in ${CMAKE_BINARY_DIR}/sqlite3_config.h)
 
+## TODO
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Config
     ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -123,6 +153,7 @@ install(EXPORT  ${PROJECT_NAME}Config
 install(FILES
     ${CMAKE_BINARY_DIR}/sqlite3_config.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
+## TODO
 
 #------------------------------------------------------------------------------
 # SQLite3 shell application:

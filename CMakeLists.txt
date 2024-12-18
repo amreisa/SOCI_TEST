@@ -36,7 +36,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Construct the compiler string for the include directories.
 #foreach(dir ${SQLITE3_INCLUDES})
-  #  string(APPEND INCLUDE_COMPILER_STRING "/I${dir} ")
+#  string(APPEND INCLUDE_COMPILER_STRING "/I${dir} ")
 #endforeach()
 
 #target_link_libraries(socidl PUBLIC SQLite::SQLite)
@@ -50,7 +50,8 @@ FetchContent_Declare(
     # GIT_TAG        master
     # FIND_PACKAGE_ARGS NAMES SQLite3 SQLite sqlite3 sqlite
     # OVERRIDE_FIND_PACKAGE NAMES SQLite3 SQLite sqlite3 sqlite
-    )
+    OVERRIDE_FIND_PACKAGE
+)
 
 FetchContent_MakeAvailable( SQLite3 )
 
@@ -70,7 +71,7 @@ FetchContent_Declare(
     soci-git
     GIT_REPOSITORY https://github.com/SOCI/soci.git
     GIT_TAG        master
-    )
+)
 
 # bullshit - work with targets && do not add defines when the poject offers camek options
 #add_compile_definitions( SOCI_HAVE_CXX11 )
@@ -102,7 +103,7 @@ if(NOT TARGET soci_sqlite3_static)
 endif()
 string( APPEND CMA )
 target_link_libraries(socidl PRIVATE
-        SQLite3
+    SQLite3
     soci_sqlite3_static #<<- this needs symbols from core, therefor you need to put it first (try to toggle! and see what happens)
     soci_core_static
 )
